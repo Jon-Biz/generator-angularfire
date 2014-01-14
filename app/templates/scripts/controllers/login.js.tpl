@@ -1,6 +1,6 @@
 
 angular.module('<%= scriptAppName %>')
-   .controller('loginController', function($scope, simpleLogin<%if( useOauth ) { %>, loginProviders<% } %><% if( usePasswordAuth ) { %>, $location<% } %>) {
+   .controller('loginController', function($scope, simpleLogin<% if( usePasswordAuth ) { %>, $location<% } %>) {
       $scope.pass = null;
       $scope.err = null;<% if( usePasswordAuth ) { %>
       $scope.email = null;

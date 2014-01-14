@@ -1,5 +1,5 @@
 
-angular.module('angularfire.login', ['firebase', '<%= scriptAppName %>.firebase'])
+angular.module('angularfire.login', ['firebase', 'angularfire.firebase'])
 
    .run(function(simpleLogin) {
       simpleLogin.init();
@@ -76,13 +76,12 @@ angular.module('angularfire.login', ['firebase', '<%= scriptAppName %>.firebase'
             auth.$createUser(email, pass, callback);
          },
 
-         createProfile: profileCreator
+         createProfile: profileCreator<% } %>
       };
 
       function assertAuth() {
          if( auth === null ) { throw new Error('Must call loginService.init() before using its methods'); }
-      }
-<% } %><% if( usePasswordAuth ) { %>
+      }<% if( usePasswordAuth ) { %>
    })
 
    .factory('profileCreator', function(firebaseRef, $timeout) {
