@@ -1,6 +1,6 @@
 (function (angular) {
   'use strict';
-  angular.module('<% scriptAppName %>')
+  angular.module('<%= scriptAppName %>')
     .run(function ($injector, $location, $rootScope, loginRedirectPath) {
       if ($injector.has('$route')) {
         new RouteSecurityManager($location, $rootScope, $injector.get('$route'), loginRedirectPath);

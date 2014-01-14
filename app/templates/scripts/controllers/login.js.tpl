@@ -10,7 +10,7 @@ angular.module('<%= scriptAppName %>')
     $scope.user = null;
 
     $scope.login = function(service) {
-      simpleLogin.login(service, function(err, user) {
+      simpleLogin.login(service, function(err) {
         $scope.err = err? err + '' : null;
       });
     };

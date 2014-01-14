@@ -118,7 +118,7 @@ Generator.prototype._injectBowerScripts = function() {
 Generator.prototype.injectAngularModules = function() {
    var deps = this._.map(['firebase', 'login'], function(dep) {
       return util.format('%s.%s', 'angularfire', dep);
-   }, this);
+   }, this).concat(['firebase']);
 
    if( this.options['skip-add'] ) {
       this.log(

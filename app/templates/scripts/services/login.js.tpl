@@ -5,10 +5,11 @@ angular.module('angularfire.login', ['firebase', 'angularfire.firebase'])
     simpleLogin.init();
   })
 
-  .factory('simpleLogin', function($rootScope, $firebaseSimpleLogin, firebaseRef, profileCreator, $timeout) {
-<% if( usePasswordAuth ) { %>    function assertAuth() {
+  .factory('simpleLogin', function($rootScope, $firebaseSimpleLogin, firebaseRef<% if( usePasswordAuth ) { %>, profileCreator<% } %>, $timeout) {
+    function assertAuth() {
       if( auth === null ) { throw new Error('Must call loginService.init() before using its methods'); }
-    }<% } %>
+    }
+
     var auth = null;
     return {
       init: function() {
