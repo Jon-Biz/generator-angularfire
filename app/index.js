@@ -16,7 +16,8 @@ var Generator = module.exports = function Generator(args, options, config) {
    this.on('end', function () {
       this.installDependencies({
          skipInstall: this.options['skip-install'],
-         npm: false
+         npm: false,
+         callback: this._injectBowerScripts.bind(this)
       });
    });
 };
@@ -95,7 +96,7 @@ Generator.prototype.injectBowerDeps = function() {
 };
 
 // credits: generator-angular/app/index.js
-Generator.prototype.injectBowerScripts = function() {
+Generator.prototype._injectBowerScripts = function() {
    if (this.options['skip-add']) {
       console.log(
          '\nI did not inject deps into app/index.html. Once `bower install` has been run, you can\n' +
