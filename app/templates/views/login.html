@@ -1,0 +1,40 @@
+<!-- wait for auth to resolve (avoid flashing login page before redirect -->
+<div ng-cloak-auth>
+
+    <!-- examples for fun and profit -->
+    <!--<div ng-show-auth="login">{{auth.user|json}}</div>-->
+    <!--<div ng-show-auth="error,logout">Logged out</div>-->
+    <!--<div ng-show-auth="error">{{auth.error}}</div>-->
+
+    <% if( useOauth ) { %><ul><% _.each( configProps.providers, function( provider ) { %><% if ( provider !== 'password' ){ %>
+       <li><button ng-click="login('<%- provider %>')"><%- provider %></button></li>
+    <% } %><% }); %></ul><% } %>
+
+    <% if( usePasswordAuth ) { %>
+    <h2>Login Page</h2>
+
+    <form>
+        <label>
+            <span>email</span>
+            <input type="text" ng-model="email" />
+        </label>
+        <label>
+            <span>password</span>
+            <input type="password" ng-model="pass" />
+        </label>
+        <label ng-show="createMode">
+            <span>confirm pass</span>
+            <input type="password" ng-model="confirm" />
+        </label>
+        <button ng-click="loginPassword()" ng-hide="createMode">Log In</button>
+        <button ng-click="createMode = true" ng-hide="createMode">Create Account</button>
+        <button ng-cloak ng-show="createMode" ng-click="createAccount()">Ready to Create</button>
+        <button ng-cloak ng-show="createMode" ng-click="createMode = false">Cancel</button>
+
+    </form>
+    <% } %>
+
+    <p ng-show="err" class="error">{{err}}</p>
+
+</div>
+
