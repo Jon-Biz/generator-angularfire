@@ -43,7 +43,7 @@ describe('angularfire generator', function () {
            'app/scripts/services/waitforauth.js',
            'app/scripts/directives/ngcloakauth.js',
            ['app/scripts/angularfire/config.js', /TEST_INSTANCE_NAME/],
-           ['app/scripts/views/login.html', /facebook/],
+           ['app/views/login.html', /facebook/],
            'app/scripts/angularfire/routesecurity.js'
         ];
 
