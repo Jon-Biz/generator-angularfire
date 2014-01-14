@@ -4,7 +4,7 @@
          "firebase": "~1.0.2",
          "angularfire": "~0.5.0"
       },
-      "auth": {
+      "simple": {
          "firebase-simple-login": "~1.0.2"
       }
    }

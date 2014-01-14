@@ -90,7 +90,7 @@ Generator.prototype.injectBowerDeps = function() {
       this._.each(this.pkg.bower.simple, function(ver, name) {
          json.dependencies[name] = ver;
          this.log.info('%s: %s', name, ver);
-      });
+      }, this);
    }
    fs.writeFileSync('./bower.json', JSON.stringify(json, null, '  ') + '\n');
 };
@@ -130,12 +130,15 @@ Generator.prototype.injectAngularModules = function() {
    else {
       apputil.title('Injecting module dependencies into %yellowapp/scripts/app.js%/yellow');
       this._addModuleDependencies('scripts/app.js', deps);
+
    }
+
+   this._addRoutingPaths();
 };
 
 Generator.prototype.injectScriptTags = function() {
    apputil.title('Injecting libs into %yellowapp/index.html%/yellow');
-   var res = apputil.addLibScripts(this._, path.join(process.cwd(), 'app/index.html'), this.scriptDeps);
+   var res = apputil.addLibScripts(this._, path.join(this.env.options.appPath, 'index.html'), this.scriptDeps);
    this._.each(res, function(v,k) {
       if(v === 'exists') {
          console.log(colorAction('exists')+' '+k);
@@ -144,6 +147,14 @@ Generator.prototype.injectScriptTags = function() {
          console.log(colorAction('added')+' '+k);
       }
    }, this);
+};
+
+Generator.prototype.setupTestUnits = function() {
+   //todo
+   //todo
+   //todo
+   //todo
+   this._updateKarmaDeps();
 };
 
 Generator.prototype._validateAngularBuild = function() {
@@ -223,6 +234,64 @@ Generator.prototype._assertNoCoffee = function(){
    }
    if( this.env.options.coffee ) {
       throw new Error('CoffeeScript not supported yet :(');
+   }
+};
+
+Generator.prototype._addRoutingPaths = function() {
+   if( this.configProps.routing ) {
+      var routeText = "      .when('/login', {\n" +
+         "        authRequired: false, // if true, must log in before viewing this page\n" +
+         "        templateUrl: 'views/login.html',\n" +
+         "        controller: 'LoginCtrl'\n" +
+         "      })";
+      if( this.options['skip-add'] ) {
+         this.log(
+            '\nI did not add the login page to routing in app/scripts/app.js. You can\n' +
+               'do this manually by adding the following just before the .otherwise(...) entry:'+
+               chalk.yellow.bold("\n"+routeText)
+         );
+      }
+      else {
+         var destPath = path.join(this.env.options.appPath, 'scripts', 'app.js');
+         var text = fs.readFileSync(destPath, 'utf8');
+         if( text.match(/\.when\('\/login',/) ) {
+            this.log(colorAction('exists')+' #/login route');
+         }
+         else {
+            text = text.replace('.otherwise({', routeText.trim()+"\n      .otherwise({");
+            fs.writeFileSync(destPath, text, {encoding: 'utf8'});
+            this.log(colorAction('added')+' #/login route');
+         }
+      }
+   }
+};
+
+Generator.prototype._updateKarmaDeps = function(){
+   apputil.title('Updating Karma dependencies');
+   var log = this.log, deps = [];
+   function addDep(ver, key) {
+      var depname = util.format('app/bower_components/%s/%s.js', key, key);
+      if( text.match(depname) ) {
+         log(colorAction('exists')+' '+depname);
+      }
+      else {
+         log(colorAction('added')+' '+depname);
+         deps.push(depname);
+      }
+   }
+
+   var destPath = path.join(process.cwd(), 'karma.conf.js');
+   var text = fs.readFileSync(destPath, 'utf8');
+   this._.each(this.pkg.bower.default, addDep);
+   if( this.configProps.simple ) {
+      this._.each(this.pkg.bower.simple, addDep);
+   }
+
+   if( deps.length ) {
+      text = text.replace(/( +)(['"]app\/scripts\/\*\.js['"])/, function(m, p1, p2) {
+         return p1+"'"+deps.join("',\n'"+p1)+"',\n"+p1+p2;
+      });
+      fs.writeFileSync(destPath, text, {encoding: 'utf8'});
    }
 };
 
