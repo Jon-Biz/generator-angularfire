@@ -1,8 +1,7 @@
 generator-angularfire [![Build Status](https://secure.travis-ci.org/katowulf/generator-angularfire.png?branch=master)](https://travis-ci.org/katowulf/generator-angularfire)
 =================================================
 
-A generator for [Yeoman](http://yeoman.io).
-
+A generator for [Yeoman](http://yeoman.io) which adds Firebase and angluarFire support into an existing `yo angular` installation.
 
 Getting Started
 ---------------
