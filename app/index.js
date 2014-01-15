@@ -406,12 +406,7 @@ var PROMPTS = [
       type: 'checkbox',
       name: 'providers',
       message: 'Which providers shall I install?',
-      choices: [
-         {name: 'Email/Password', value: 'password', checked: true},
-         {name: 'Facebook', value: 'facebook'},
-         {name: 'Twitter', value: 'twitter'},
-         {name: 'Persona', value: 'persona'}
-      ],
+      choices: require(path.join(__dirname, 'config.json'))['simple-login-providers'],
       when: function(answers) {
          return answers.simple;
       },
