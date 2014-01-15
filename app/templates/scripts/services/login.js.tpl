@@ -29,7 +29,7 @@ angular.module('angularfire.login', ['firebase', 'angularfire.firebase'])
        */
       login: function(provider, callback) {
         assertAuth();
-        auth.login(provider, {rememberMe: true}).then(function(user) {
+        auth.$login(provider, {rememberMe: true}).then(function(user) {
           if( callback ) {
             //todo-bug https://github.com/firebase/angularFire/issues/199
             $timeout(function() {
@@ -72,13 +72,14 @@ angular.module('angularfire.login', ['firebase', 'angularfire.firebase'])
           $timeout(function() { cb('Passwords do not match'); });
         }
         else {
-          auth.$changePassword(opts.email, opts.oldpass, opts.newpass, cb);
+          auth.$changePassword(opts.email, opts.oldpass, opts.newpass)
+            .then(function() { cb(null); }, cb);
         }
       },
 
       createAccount: function(email, pass, callback) {
         assertAuth();
-        auth.$createUser(email, pass, callback);
+        auth.$createUser(email, pass).then(function(user) { callback(null, user); }, callback);
       },
 
       createProfile: profileCreator<% } %>

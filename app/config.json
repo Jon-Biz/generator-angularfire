@@ -2,7 +2,7 @@
    "bower": {
       "default": {
          "firebase": "~1.0.2",
-         "angularfire": "~0.5.0"
+         "angularfire": "~0.6.0"
       },
       "simple": {
          "firebase-simple-login": "~1.0.2"

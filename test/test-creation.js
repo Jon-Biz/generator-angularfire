@@ -24,6 +24,7 @@ describe('angularfire generator', function () {
             fs.writeFileSync(path.join(appDir, 'scripts', 'app.js'), fs.readFileSync(path.join(__dirname, 'templates', '_app.js')));
             fs.writeFileSync(path.join(dir, 'bower.json'), fs.readFileSync(path.join(__dirname, 'templates', '_bower.json')));
             fs.writeFileSync(path.join(dir, 'package.json'), fs.readFileSync(path.join(__dirname, 'templates', '_package.json')));
+            fs.writeFileSync(path.join(dir, 'karma.conf.js'), fs.readFileSync(path.join(__dirname, 'templates', '_karma.conf.js')));
 
             this.app = helpers.createGenerator('angularfire:app', [
                 '../../app'

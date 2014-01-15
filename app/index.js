@@ -7,9 +7,6 @@ var chalk   = require('chalk');
 var wiredep = require('wiredep');
 var apputil = require(path.join(__dirname, '../util'));
 
-//todo  update generator tests?
-//todo  add test units for login, firebase, waitforauth, ?
-
 var Generator = module.exports = function Generator(args, options, config) {
    yeoman.generators.Base.apply(this, arguments);
 
@@ -62,6 +59,7 @@ Generator.prototype.askFor = function askFor() {
 
 Generator.prototype.copyTemplates = function() {
    apputil.title('Building files in %yellowapp/%/yellow folder...');
+   //todo move these to config.json
    this._copyTemplate('config.js', 'scripts/angularfire');
    this._copyTemplate('firebase.js', 'scripts/services');
    if( this.configProps.simple ) {
@@ -116,6 +114,7 @@ Generator.prototype._injectBowerScripts = function() {
 };
 
 Generator.prototype.injectAngularModules = function() {
+   //todo move these to config.json
    var deps = this._.map(['firebase', 'login'], function(dep) {
       return util.format('%s.%s', 'angularfire', dep);
    }, this).concat(['firebase']);
@@ -130,7 +129,6 @@ Generator.prototype.injectAngularModules = function() {
    else {
       apputil.title('Injecting module dependencies into %yellowapp/scripts/app.js%/yellow');
       this._addModuleDependencies('scripts/app.js', deps);
-
    }
 
    this._addRoutingPaths();
@@ -238,11 +236,12 @@ Generator.prototype._assertNoCoffee = function(){
 };
 
 Generator.prototype._addRoutingPaths = function() {
+   //todo move these to config.json
    if( this.configProps.routing ) {
       var routeText = "      .when('/login', {\n" +
          "        authRequired: false, // if true, must log in before viewing this page\n" +
          "        templateUrl: 'views/login.html',\n" +
-         "        controller: 'LoginCtrl'\n" +
+         "        controller: 'LoginController'\n" +
          "      })";
       if( this.options['skip-add'] ) {
          this.log(
@@ -254,13 +253,22 @@ Generator.prototype._addRoutingPaths = function() {
       else {
          var destPath = path.join(this.env.options.appPath, 'scripts', 'app.js');
          var text = fs.readFileSync(destPath, 'utf8');
-         if( text.match(/\.when\('\/login',/) ) {
+         var m = text.match(/( *\.when\('\/login',[^)]+\))/);
+         if( m && m[1].trim() === routeText.trim() ) {
             this.log(colorAction('exists')+' #/login route');
          }
          else {
-            text = text.replace('.otherwise({', routeText.trim()+"\n      .otherwise({");
+            var action;
+            if( m ) {
+               text = text.replace(m[0], routeText);
+               action = 'updated';
+            }
+            else {
+               text = text.replace('.otherwise({', routeText.trim()+"\n      .otherwise({");
+               action = 'added';
+            }
             fs.writeFileSync(destPath, text, {encoding: 'utf8'});
-            this.log(colorAction('added')+' #/login route');
+            this.log(colorAction(action)+' #/login route');
          }
       }
    }
@@ -289,7 +297,7 @@ Generator.prototype._updateKarmaDeps = function(){
 
    if( deps.length ) {
       text = text.replace(/( +)(['"]app\/scripts\/\*\.js['"])/, function(m, p1, p2) {
-         return p1+"'"+deps.join("',\n'"+p1)+"',\n"+p1+p2;
+         return util.format("%s'%s',\n%s%s", p1, deps.join(util.format("',\n%s'", p1)), p1, p2);
       });
       fs.writeFileSync(destPath, text, {encoding: 'utf8'});
    }
