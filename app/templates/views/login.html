@@ -1,40 +1,63 @@
 <!-- wait for auth to resolve (avoid flashing login page before redirect -->
-<div ng-cloak-auth>
+<div ng-cloak-auth class="row">
+    <div class="col-md-12">
 
-    <!-- examples for fun and profit -->
-    <!--<div ng-show-auth="login">{{auth.user|json}}</div>-->
-    <!--<div ng-show-auth="error,logout">Logged out</div>-->
-    <!--<div ng-show-auth="error">{{auth.error}}</div>-->
+        <legend>You need to add a logout button!</legend>
+<pre><code>
+  // like this
+  &lt;p&gt;&lt;button class="btn btn-default" ng-click="logout()"&gt;log out&lt;/button&gt;&lt;/p&gt;
 
-    <% if( useOauth ) { %><ul><% _.each( configProps.providers, function( provider ) { %><% if ( provider !== 'password' ){ %>
-       <li><button ng-click="login('<%- provider %>')"><%- provider %></button></li>
-    <% } %><% }); %></ul><% } %>
+  // and a controller to run it
+  function($scope, simpleLogin) {
+    $scope.logout = simpleLogin.logout;
+  }
+</code></pre>
 
-    <% if( usePasswordAuth ) { %>
-    <h2>Login Page</h2>
+        <!-- examples for fun and profit -->
+        <!--<div ng-show-auth="login">{{auth.user|json}}</div>-->
+        <!--<div ng-show-auth="error,logout">Logged out</div>-->
+        <!--<div ng-show-auth="error">{{auth.error}}</div>-->
+        <% if( useOauth ) { %><fieldset>
+            <legend>Oauth</legend>
+            <p><% _.each( selectedProviders, function( provider ) { %><% if ( provider.value !== 'password' ){ %>
+                <button class="btn btn-lg btn-primary" ng-click="login('<%- provider.value %>')"><%- provider.name %></button><% } %><% }); %>
+            </p>
+        </fieldset><% } %>
 
-    <form>
-        <label>
-            <span>email</span>
-            <input type="text" ng-model="email" />
-        </label>
-        <label>
-            <span>password</span>
-            <input type="password" ng-model="pass" />
-        </label>
-        <label ng-show="createMode">
-            <span>confirm pass</span>
-            <input type="password" ng-model="confirm" />
-        </label>
-        <button ng-click="loginPassword()" ng-hide="createMode">Log In</button>
-        <button ng-click="createMode = true" ng-hide="createMode">Register</button>
-        <button ng-cloak ng-show="createMode" ng-click="createAccount()">Create Account</button>
-        <button ng-cloak ng-show="createMode" ng-click="createMode = false">Cancel</button>
+        <% if( usePasswordAuth ) { %>
+        <p>&nbsp;</p>
+        <form role="form">
+            <fielset>
+                <legend>Email/Password</legend>
 
-    </form>
-    <% } %>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>email</label>
+                            <input class="form-control" type="text" ng-model="email" />
+                        </div>
 
-    <p ng-show="err" class="error">{{err}}</p>
+                        <div class="form-group">
+                            <label>password</label>
+                            <input class="form-control" type="password" ng-model="pass" />
+                        </div>
 
+                        <div class="form-group" ng-show="createMode">
+                            <label>confirm pass</label>
+                            <input class="form-control" type="password" ng-model="confirm" />
+                        </div>
+
+                        <button class="btn btn-primary" ng-click="loginPassword()" ng-hide="createMode">Log In</button>
+                        <button class="btn btn-default" ng-click="createMode = true" ng-hide="createMode">Register</button>
+                        <button class="btn btn-success" ng-cloak ng-show="createMode" ng-click="createAccount()">Create Account</button>
+                        <button class="btn btn-default" ng-cloak ng-show="createMode" ng-click="createMode = false">Cancel</button>
+                    </div>
+                </div>
+            </fielset>
+        </form>
+        <% } %>
+
+        <p ng-show="err" class="error">{{err}}</p>
+    </div>
 </div>
 

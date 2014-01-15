@@ -1,21 +1,21 @@
 {
   "name": "generator-angularfire",
-  "version": "0.0.1",
-  "description": "Yeoman generator to add angularFire into an angular project",
+  "version": "0.0.2",
+  "description": "Yeoman generator to add angularFire (Angular+Firebase) into an existing angular install",
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator", "firebase", "angular", "angularfire"
   ],
-  "homepage": "https://github.com/katowulf/generator-angularfire",
-  "bugs": "https://github.com/katowulf/generator-angularfire/issues",
+  "homepage": "https://github.com/firebase/generator-angularfire",
+  "bugs": "https://github.com/firebase/generator-angularfire/issues",
   "author": {
-    "name": "",
-    "email": "",
+    "name": "Michael (Kato) Wulf",
+    "email": "wulf@firebase.com",
     "url": "https://github.com/katowulf"
   },
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/katowulf/generator-angularfire.git"
+    "url": "git://github.com/firebase/generator-angularfire.git"
   },
   "scripts": {
     "test": "mocha"

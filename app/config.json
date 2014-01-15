@@ -8,10 +8,9 @@
          "firebase-simple-login": "~1.0.2"
       }
    },
-   "simple-login-providers": [
+   "simpleLoginProviders": [
       {"name": "Facebook",       "value": "facebook", "checked": true},
       {"name": "Twitter",        "value": "twitter"},
-      {"name": "Email/Password", "value": "password"},
-      {"name": "Persona",        "value": "persona"}
+      {"name": "Email/Password", "value": "password"}
    ]
 }

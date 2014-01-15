@@ -38,10 +38,8 @@ Generator.prototype.askFor = function askFor() {
    apputil.title();
    var _ = this._;
    var cb = this.async();
-   var opts = this.options;
    var configProps = this.configProps = { firebase: null, routing: false, simple: false, loginPage: false, providers: [] };
-   var prompts = [];
-   this._.each(PROMPTS, addPrompt.bind(null, prompts, configProps, _, opts));
+   var prompts = buildPrompts(this._, this.configProps, this.options);
 
    this.prompt(prompts, function (answers) {
       var key;
@@ -53,6 +51,12 @@ Generator.prototype.askFor = function askFor() {
       // used by templates
       this.useOauth = configProps.simple && this._.find(configProps.providers, function(v) { return v !== 'password' })!==undefined;
       this.usePasswordAuth = configProps.simple && configProps.providers.indexOf('password') >= 0;
+      this.selectedProviders = [];
+      if( configProps.simple ) {
+         this.selectedProviders = this._.filter(this.pkg.simpleLoginProviders, function(prov) {
+            return configProps.providers.indexOf(prov.value) >= 0;
+         });
+      }
       cb();
    }.bind(this));
 };
@@ -167,13 +171,14 @@ Generator.prototype._validateAngularBuild = function() {
 
 Generator.prototype._initEnv = function() {
    this.pkg        = JSON.parse(this.readFileAsString(path.join(__dirname, 'config.json')));
-   this.appPkg     = require(path.join(process.cwd(), 'package.json'));
    var bower       = require(path.join(process.cwd(), 'bower.json'));
 
    this.scriptDeps = [];
    this.env.options.appPath = bower.appPath || 'app';
    this.env.options.testPath = bower.testPath || 'test/spec';
    this.appname = this._.slugify(this._.humanize(bower.name || path.basename(process.cwd())));
+
+   // used by templates
    this.scriptAppName = apputil.fetchAppName(this.appname, this.env.options.appPath);
 
    this._assertNoCoffee();
@@ -303,32 +308,6 @@ Generator.prototype._updateKarmaDeps = function(){
    }
 };
 
-function addPrompt(prompts, configProps, _, options, prompt) {
-   var k = prompt.name;
-   var useDefault = (!options[k] && options['default'] && prompt.hasOwnProperty('default'));
-   if( useDefault || options[k] ) {
-      configProps[k] = useDefault? prompt.default : options[k];
-      if( prompt.type === 'checkbox' && !Array.isArray(configProps[k]) ) {
-         configProps[k] = _.map(configProps[k].split(','), function(v) {
-            if( _.find(prompt.choices, function(c) {
-               return _.isObject(c)? c.value === v : c === v;
-            }) === undefined ) {
-               throw new Error('Invalid choice for option "'+k+'": '+v);
-            }
-            return (v+'').toLowerCase()
-         });
-      }
-      console.log(apputil.colors(
-         '[%green?%/green] %s %cyan%s%/cyan',
-         prompt.message,
-         prompt.type === 'confirm'? 'Yes' : configProps[k]
-      ));
-   }
-   else {
-      prompts.push(prompt);
-   }
-}
-
 function assertFile(fileName){
    if( !fs.existsSync(fileName) ) {
       console.error(chalk.red('Did not find '+fileName+'. Have you run `yo angular` already?'));
@@ -385,47 +364,82 @@ function colorAction(action) {
    }
 }
 
-var PROMPTS = [
-   {
-      name: 'firebase',
-      message: apputil.colors('Name of your Firebase instance ' +
-         '(https//%yellow<INSTANCE>%/yellow.firebaseio.com)'),
-      required: true,
-      validate: function(input) {
-         if( !input || !input.match(/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/) ) {
-            return chalk.red('Your Firebase name may only contain [a-z], [0-9], and hyphen (-). It may not start or end with a hyphen.');
+function buildPrompts(_, configProps, options) {
+   var PROMPTS = [
+      {
+         name: 'firebase',
+         message: apputil.colors('Name of your Firebase instance ' +
+            '(https//%yellow<INSTANCE>%/yellow.firebaseio.com)'),
+         required: true,
+         validate: function(input) {
+            if( !input || !input.match(/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/) ) {
+               return chalk.red('Your Firebase name may only contain [a-z], [0-9], and hyphen (-). It may not start or end with a hyphen.');
+            }
+            return true;
          }
-         return true;
+      }, {
+         type: 'confirm',
+         name: 'simple',
+         message: 'Shall I include FirebaseSimpleLogin?',
+         default: true
+      }, {
+         type: 'checkbox',
+         name: 'providers',
+         message: 'Which providers shall I install?',
+         choices: require(path.join(__dirname, 'config.json'))['simpleLoginProviders'],
+         when: function(answers) {
+            return answers.simple || options.default;
+         },
+         validate: function(picks) {
+            return picks.length > 0? true : 'Must pick at least one provider';
+         },
+         default: ['password']
+      }, {
+         type: 'confirm',
+         name: 'routing',
+         message: 'Shall I include routeSecurity?',
+         default: true,
+         when: function(answers) {
+            return answers.simple;
+         }
+      }, {
+         type: 'confirm',
+         name: 'loginPage',
+         message: 'Shall I create a rudimentary login screen?',
+         default: true,
+         when: function(answers) {
+            return answers.simple;
+         }
       }
-   }, {
-      type: 'confirm',
-      name: 'simple',
-      message: 'Shall I include FirebaseSimpleLogin?',
-      default: true
-   }, {
-      type: 'checkbox',
-      name: 'providers',
-      message: 'Which providers shall I install?',
-      choices: require(path.join(__dirname, 'config.json'))['simple-login-providers'],
-      when: function(answers) {
-         return answers.simple;
-      },
-      default: ['password']
-   }, {
-      type: 'confirm',
-      name: 'routing',
-      message: 'Shall I include routeSecurity?',
-      default: true,
-      when: function(answers) {
-         return answers.simple;
+   ];
+
+   var prompts = [];
+   _.each(PROMPTS, addPrompt.bind(null, prompts, configProps, _, options));
+   return prompts;
+}
+
+function addPrompt(prompts, configProps, _, options, prompt) {
+   var k = prompt.name;
+   var useDefault = (!options[k] && options['default'] && prompt.hasOwnProperty('default') && prompt.type !== 'checkbox');
+   if( useDefault || options[k] ) {
+      configProps[k] = useDefault? prompt.default : options[k];
+      if( prompt.type === 'checkbox' && !Array.isArray(configProps[k]) ) {
+         configProps[k] = _.map(configProps[k].split(','), function(v) {
+            if( _.find(prompt.choices, function(c) {
+               return _.isObject(c)? c.value === v : c === v;
+            }) === undefined ) {
+               throw new Error('Invalid choice for option "'+k+'": '+v);
+            }
+            return (v+'').toLowerCase()
+         });
       }
-   }, {
-      type: 'confirm',
-      name: 'loginPage',
-      message: 'Shall I create a rudimentary login screen?',
-      default: true,
-      when: function(answers) {
-         return answers.simple;
-      }
+      console.log(apputil.colors(
+         '[%green?%/green] %s %cyan%s%/cyan',
+         prompt.message,
+         prompt.type === 'confirm'? 'Yes' : configProps[k]
+      ));
    }
-];
+   else {
+      prompts.push(prompt);
+   }
+}
