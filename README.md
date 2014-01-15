@@ -8,7 +8,7 @@ Getting Started
 
 ### Installation
 
-    npm install -g yo generator-angular generator-angularfire
+    npm install -g generator-angularfire
     yo angular
     yo angularfire
 
@@ -25,6 +25,32 @@ Getting Started
  * `[?] Shall I create a rudimentary login screen?`
    This creates views/login.html and controllers/login.js, which provide registration (for password auth) and authentication
 
+### What does it do?
+
+ * app/bower_components/:
+    * adds firebase/
+    * adds firebase-simple-login/
+    * adds angularFire/
+ * app/scripts/app.js
+    * adds the `firebase`, `angularfire.firebase` and `angularfire.login` module dependencies
+    * adds the `#/login` route if you opted for the login screen
+ * app/scripts/angularfire/
+    * adds config.js which contains your Firebase URL, and other settings
+    * adds routesecurity.js (optional) which allows you to put `authRequired` in any route config to prevent access before authenticating
+ * app/scripts/controllers/
+    * adds login.js (optional) assuming you enabled the rudimentary login screen
+ * app/scripts/directives
+    * adds ngcloakauth.js: (optional) a couple directives for dealing with blinking screens during init and login
+ * app/scripts/services
+    * adds firebase.js: a convenience wrapper for creating Firebase references and quickly syncing data
+    * adds login.js: (optional) a set of services for logging in, creating users, etc
+    * adds waitforauth.js: used by ngcloakauth.js
+ * app/views
+    * adds login.html: (optional) assuming you enabled the rudimentary login screen
+ * app/index.html
+    * injects script tags for new libs and bower modules
+ * bower.json: adds new dependencies (everything in bower_components/ above)
+ * karma.conf.js: adds deps for testing (everything in bower_components/ above)
 
 Command Line Options
 --------------------
@@ -44,21 +70,22 @@ You can avoid the question prompts with the following options:
 Contributing
 ------------
 
-This will get you started:
+This will get you started to hack on generator-angularfire:
 
     npm -g yo yeoman-generator generator-angular
     git clone https://github.com/<YOUR_FORKED_VERSION>/generator-angularfire.git
-
-Generators are a bit tricky because they are installed globally. When you want to use your local generator, you have to
-link it global dependencies.
-
-This is done like so:
-
     cd generator-angularfire
     npm link yo
     npm link generator-angular
     npm install
     npm test
+
+Generators are a bit tricky because they are installed globally. When you want to use your local generator, you have to
+use it as a global dependency, but that's not convenient for testing and debugging.
+
+You can make it available globally while still keeping a local copy like so:
+    cd generator-angularfire
+    npm link
 
 When you want to try a build, you can do it like this:
 
