@@ -25,6 +25,21 @@ Getting Started
  * `[?] Shall I create a rudimentary login screen?`
    This creates views/login.html and controllers/login.js, which provide registration (for password auth) and authentication
 
+Command Line Options
+--------------------
+
+You can set the following command line options:
+
+ * `--skip-add`: do not inject `<script>` tags into app/index.html
+ * `--skip-welcome-message`: do not show yeoman welcome
+ * `--skip-install`: do not run `npm install` and `bower install` after setup
+
+You can avoid the question prompts with the following options:
+
+ * `--firebase=<instance>`: specify your Firebase instance name
+ * `--providers=<name>`: Comma separated list of FirebaseSimpleLogin providers to install (password, facebook, twitter, or persona)
+ * `--default`: accept defaults for any other yes/no questions
+
 ### What does it do?
 
  * app/bower_components/:
@@ -51,21 +66,6 @@ Getting Started
     * injects script tags for new libs and bower modules
  * bower.json: adds new dependencies (everything in bower_components/ above)
  * karma.conf.js: adds deps for testing (everything in bower_components/ above)
-
-Command Line Options
---------------------
-
-You can set the following command line options:
-
- * `--skip-add`: do not inject `<script>` tags into app/index.html
- * `--skip-welcome-message`: do not show yeoman welcome
- * `--skip-install`: do not run `npm install` and `bower install` after setup
-
-You can avoid the question prompts with the following options:
-
- * `--firebase=<instance>`: specify your Firebase instance name
- * `--providers=<name>`: Comma separated list of FirebaseSimpleLogin providers to install (password, facebook, twitter, or persona)
- * `--defaults`: accept defaults for any other yes/no questions
 
 Contributing
 ------------
