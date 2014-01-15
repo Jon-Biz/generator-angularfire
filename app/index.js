@@ -205,7 +205,8 @@ Generator.prototype._addModuleDependencies = function(fileName, deps) {
    var action;
    var destPath = path.join(this.env.options.appPath, fileName);
    var origText = fs.readFileSync(destPath, 'utf8');
-   var replacedText = origText.replace(/(angular.module\('testgenApp', *\[)([^\]]*)\]/m, function(m, p1, p2) {
+   var re = new RegExp("(angular.module\\('"+this.scriptAppName+"', *\\[)([^\\]]*)\\]", 'm');
+   var replacedText = origText.replace(re, function(m, p1, p2) {
       var depList = stringifyDepList(mergeDepList(parseDepList(p2), deps));
       return p1+'\n  '+depList+'\n]';
    });
