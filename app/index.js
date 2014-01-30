@@ -67,10 +67,11 @@ Generator.prototype.copyTemplates = function() {
    this._copyTemplate('config.js', 'scripts/angularfire');
    this._copyTemplate('firebase.js', 'scripts/services');
    if( this.configProps.simple ) {
+      var cssFileName = this.env.options.useSass? 'styles/angularfire.scss' : 'styles/angularfire.css';
       this._copyTemplate('login.js.tpl', 'scripts/services');
       this._copyTemplate('waitforauth.js', 'scripts/services');
       this._copyTemplate('ngcloakauth.js', 'scripts/directives');
-      this._appendToFile('styles/angularfire.scss', 'styles/main.scss');
+      this._appendToFile(cssFileName, 'styles/main.css');
       if( this.configProps.routing ) {
          this._copyTemplate('routesecurity.js', 'scripts/angularfire');
       }
@@ -173,9 +174,12 @@ Generator.prototype._initEnv = function() {
    this.pkg        = JSON.parse(this.readFileAsString(path.join(__dirname, 'config.json')));
    var bower       = require(path.join(process.cwd(), 'bower.json'));
 
+   apputil.title('helloooo??');
+
    this.scriptDeps = [];
    this.env.options.appPath = bower.appPath || 'app';
    this.env.options.testPath = bower.testPath || 'test/spec';
+   this.env.options.useSass = !!bower.dependencies['sass-bootstrap'];
    this.appname = this._.slugify(this._.humanize(bower.name || path.basename(process.cwd())));
 
    // used by templates
